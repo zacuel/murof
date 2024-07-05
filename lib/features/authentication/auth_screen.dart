@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:murof/authentication/auth_controller.dart';
-import 'package:murof/authentication/auth_repository.dart';
+import 'package:murof/features/authentication/auth_controller.dart';
+import 'package:murof/features/authentication/auth_repository.dart';
 import 'package:murof/utils/snackybar.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {

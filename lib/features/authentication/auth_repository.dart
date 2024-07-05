@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 
-import '../firebase_tools/firebase_providers.dart';
-import '../models/person.dart';
-import '../utils/type_defs.dart';
+import '../../utils/firebase_tools/firebase_providers.dart';
+import '../../models/person.dart';
+import '../../utils/type_defs.dart';
 
 const String entryReq = "codeword";
 
@@ -42,9 +42,9 @@ class AuthRepository {
 
   CollectionReference get _people => _firestore.collection('people');
 
-  // Stream<Person> getPersonData(String uid) {
-  //   return _people.doc(uid).snapshots().map((event) => Person.fromMap(event.data() as Map<String, dynamic>));
-  // }
+  Stream<Person> getPersonData(String uid) {
+    return _people.doc(uid).snapshots().map((event) => Person.fromMap(event.data() as Map<String, dynamic>));
+  }
 
   FutureEitherFailureOr<void> signUpAnon({
     required String inputCodeWord,

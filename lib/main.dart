@@ -1,11 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:murof/authentication/auth_repository.dart';
-import 'package:murof/firebase_tools/firebase_options.dart';
+import 'package:murof/features/authentication/auth_controller.dart';
+import 'package:murof/features/authentication/auth_repository.dart';
+import 'package:murof/utils/firebase_tools/firebase_options.dart';
 import 'package:murof/home_screen.dart';
 
-import 'authentication/auth_screen.dart';
+import 'features/authentication/auth_screen.dart';
 import 'utils/error_loader.dart';
 
 void main() async {
@@ -22,6 +24,11 @@ class MyApp extends ConsumerStatefulWidget {
 }
 
 class _MyAppState extends ConsumerState<MyApp> {
+  void getData(User data) async {
+    final person = await ref.read(authControllerProvider.notifier).getPersonData(data.uid).first;
+    ref.read(personProvider.notifier).update((state) => person);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -30,13 +37,8 @@ class _MyAppState extends ConsumerState<MyApp> {
       home: ref.watch(authStateChangeProvider).when(
           data: (data) {
             if (data != null) {
-              // getData(data);
-              // if (person != null) {
-              //   setState(() {
-              //     userColorScheme = ColorScheme.fromSeed(seedColor: person!.favoriteColor);
-              //   });
-              //   return const ScopedHomeScreen();
-              // }
+              getData(data);
+
               return const HomeScreen();
             }
             return const AuthScreen();
