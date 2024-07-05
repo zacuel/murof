@@ -7,6 +7,11 @@ import 'package:uuid/uuid.dart';
 import '../../utils/snackybar.dart';
 import '../authentication/auth_controller.dart';
 
+final articleFeedProvider = StreamProvider<List<Article>>((ref) {
+  final articlesController = ref.read(articlesControllerProvider.notifier);
+  return articlesController.articleFeed;
+});
+
 final articlesControllerProvider = StateNotifierProvider<ArticlesController, bool>((ref) {
   final articlesRepo = ref.read(articlesRepositoryProvider);
   return ArticlesController(articlesRepository: articlesRepo, ref: ref);
@@ -47,4 +52,6 @@ class ArticlesController extends StateNotifier<bool> {
       Navigator.of(context).pop();
     });
   }
+
+  Stream<List<Article>> get articleFeed => _articlesRepository.articleFeed;
 }
