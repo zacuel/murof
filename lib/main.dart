@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murof/authentication/auth_repository.dart';
 import 'package:murof/firebase_tools/firebase_options.dart';
+import 'package:murof/home_screen.dart';
 
 import 'authentication/auth_screen.dart';
 import 'utils/error_loader.dart';
@@ -36,7 +37,7 @@ class _MyAppState extends ConsumerState<MyApp> {
               //   });
               //   return const ScopedHomeScreen();
               // }
-              return Placeholder();
+              return const HomeScreen();
             }
             return const AuthScreen();
           },
