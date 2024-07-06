@@ -33,6 +33,7 @@ class _MyAppState extends ConsumerState<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(fontFamily: "Oxygen"),
       title: "forum",
       home: ref.watch(authStateChangeProvider).when(
           data: (data) {

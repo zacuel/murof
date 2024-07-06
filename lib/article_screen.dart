@@ -7,6 +7,10 @@ class ArticleScreen extends ConsumerWidget {
   final Article article;
   const ArticleScreen(this.article, {super.key});
 
+  _upvote(){
+    
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
