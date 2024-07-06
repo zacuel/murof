@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murof/features/authentication/auth_controller.dart';
 import 'package:murof/features/authentication/auth_repository.dart';
+import 'package:murof/theme_provider.dart';
 import 'package:murof/utils/firebase_tools/firebase_options.dart';
-import 'package:murof/home_screen.dart';
+import 'package:murof/screens/home_screen.dart';
 
 import 'features/articles/favorite_articles_provider.dart';
-import 'features/authentication/auth_screen.dart';
+import 'screens/auth_screen.dart';
 import 'utils/error_loader.dart';
 
 void main() async {
@@ -35,7 +36,7 @@ class _MyAppState extends ConsumerState<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(fontFamily: "Oxygen"),
+      theme: ThemeData(fontFamily: "Oxygen", colorScheme: ref.watch(colorThemeProvider)),
       title: "forum",
       home: ref.watch(authStateChangeProvider).when(
           data: (data) {

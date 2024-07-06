@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:murof/post_article_screen.dart';
+import 'package:murof/screens/post_article_screen.dart';
 
-import 'article_screen.dart';
+import 'screens/article_screen.dart';
 import 'models/article.dart';
 
 navigateToPostLink(BuildContext context) {
