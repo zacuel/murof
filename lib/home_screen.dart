@@ -23,6 +23,9 @@ class HomeScreen extends ConsumerWidget {
               itemBuilder: (context, index) {
                 final article = data[index];
                 return ListTile(
+                  onTap: () {
+                    navigateToArticle(context, article);
+                  },
                   title: Text(article.title),
                   trailing: Text(article.upvoteIds.length.toString()),
                 );
