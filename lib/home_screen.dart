@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murof/features/articles/articles_controller.dart';
+import 'package:murof/features/articles/favorite_articles_provider.dart';
 import 'package:murof/navigation.dart';
 import 'package:murof/utils/error_loader.dart';
 
@@ -9,6 +10,7 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final favList = ref.watch(favoriteArticlesProvider);
     return Scaffold(
       appBar: AppBar(
         actions: [ElevatedButton(onPressed: () => navigateToPostLink(context), child: const Text("post something"))],
@@ -16,13 +18,15 @@ class HomeScreen extends ConsumerWidget {
       body: ref.watch(articleFeedProvider).when(
           data: (data) {
             data.sort(
-              (a, b) => a.upvoteIds.length.compareTo(b.upvoteIds.length),
+              (a, b) => b.upvoteIds.length.compareTo(a.upvoteIds.length),
             );
             return ListView.builder(
               itemCount: data.length,
               itemBuilder: (context, index) {
                 final article = data[index];
+                final isFav = favList.contains(article.articleId);
                 return ListTile(
+                  tileColor: isFav ? Colors.amber : null,
                   onTap: () {
                     navigateToArticle(context, article);
                   },

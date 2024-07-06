@@ -7,6 +7,7 @@ import 'package:murof/features/authentication/auth_repository.dart';
 import 'package:murof/utils/firebase_tools/firebase_options.dart';
 import 'package:murof/home_screen.dart';
 
+import 'features/articles/favorite_articles_provider.dart';
 import 'features/authentication/auth_screen.dart';
 import 'utils/error_loader.dart';
 
@@ -27,6 +28,7 @@ class _MyAppState extends ConsumerState<MyApp> {
   void getData(User data) async {
     final person = await ref.read(authControllerProvider.notifier).getPersonData(data.uid).first;
     ref.read(personProvider.notifier).update((state) => person);
+    ref.read(favoriteArticlesProvider.notifier).createListState(person.favoriteArticleIds);
   }
 
   @override

@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../utils/snackybar.dart';
 import '../authentication/auth_controller.dart';
+import 'favorite_articles_provider.dart';
 
 final articleFeedProvider = StreamProvider<List<Article>>((ref) {
   final articlesController = ref.read(articlesControllerProvider.notifier);
@@ -40,14 +41,14 @@ class ArticlesController extends StateNotifier<bool> {
       authorId: person.uid,
       authorName: person.alias,
       title: title,
-      upvoteIds: [person.uid],
+      upvoteIds: [],
       url: url,
       content: content,
     );
     final result = await _articlesRepository.postArticle(newArticle);
     state = false;
     result.fold((l) => showSnackBar(context, l.message), (r) {
-      // _ref.read(favoriteArticlesProvider.notifier).addArticleUponCreation(article.articleId);
+      _ref.read(favoriteArticlesProvider.notifier).toggleArticleFavoriteStatus(newArticle.articleId);
       showSnackBar(context, 'Posted!');
       Navigator.of(context).pop();
     });

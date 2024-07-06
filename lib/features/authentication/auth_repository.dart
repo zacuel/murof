@@ -72,4 +72,16 @@ class AuthRepository {
       return left(Failure(e.toString()));
     }
   }
+
+  void upvote(String uid, String articleId) async {
+    await _people.doc(uid).update({
+      'favoriteArticleIds': FieldValue.arrayUnion([articleId]),
+    });
+  }
+
+  void downvote(String uid, String articleId) async {
+    await _people.doc(uid).update({
+      'favoriteArticleIds': FieldValue.arrayRemove([articleId]),
+    });
+  }
 }
