@@ -35,8 +35,9 @@ class _MyAppState extends ConsumerState<MyApp> {
     ref.read(personProvider.notifier).update((state) => person);
     ref.read(favoriteArticlesProvider.notifier).createListState(person.favoriteArticleIds);
     final bool spDarkMode = prefs.getBool('darkMode') ?? false;
+    final Color spColor = Color(prefs.getInt('color') ?? Colors.purple.value);
     Brightness brightness = spDarkMode ? Brightness.dark : Brightness.light;
-    ref.read(colorThemeProvider.notifier).update((state) => ColorScheme.fromSeed(seedColor: Colors.purple, brightness: brightness));
+    ref.read(colorThemeProvider.notifier).update((state) => ColorScheme.fromSeed(seedColor: spColor, brightness: brightness));
   }
 
   @override

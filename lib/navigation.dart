@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:murof/screens/info_screen.dart';
-import 'package:murof/screens/post_article_screen.dart';
+import 'package:murof/screens/create_article_screen.dart';
 
 import 'screens/article_screen.dart';
 import 'models/article.dart';

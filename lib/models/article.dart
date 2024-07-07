@@ -1,10 +1,7 @@
-
-import 'package:flutter/foundation.dart';
-
 class Article {
   final String articleId;
   final String authorId;
-  final String authorName; 
+  final String authorName;
   final String title;
   final String? url;
   final String? content;
@@ -62,9 +59,4 @@ class Article {
       upvoteIds: List<String>.from(map['upvoteIds']),
     );
   }
-
-
-
-
-
 }

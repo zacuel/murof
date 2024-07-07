@@ -62,7 +62,6 @@ class _PostLinkScreenState extends ConsumerState<PostLinkScreen> {
             TextField(
               controller: _titleController,
             ),
-            const Divider(),
             const SizedBox(
               height: 30,
             ),

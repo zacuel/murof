@@ -1,13 +1,27 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murof/navigation.dart';
 import 'package:murof/features/authentication/auth_controller.dart';
 import 'package:murof/features/authentication/auth_repository.dart';
 import 'package:murof/theme_provider.dart';
 import 'package:murof/utils/snackybar.dart';
+import 'package:murof/utils/text_validation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../features/authentication/name_engine.dart';
+
+Color get randomColor {
+  Random random = Random();
+  return Color.fromRGBO(
+    random.nextInt(255),
+    random.nextInt(255),
+    random.nextInt(255),
+    1,
+  );
+}
 
 class AuthScreen extends ConsumerStatefulWidget {
   final Future<SharedPreferences> sharedPreferences;
@@ -24,11 +38,17 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   bool _customName = false;
   late String _madName;
   bool _darkMode = false;
+  Color pickerColor = Colors.blue;
+  Color currentColor = Colors.blue;
 
   @override
   void initState() {
     super.initState();
     _changeUserName();
+    setState(() {
+      pickerColor = randomColor;
+      currentColor = pickerColor;
+    });
   }
 
   _changeUserName() {
@@ -42,7 +62,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         appBar: AppBar(
           title: const Text('enter code'),
         ),
-        floatingActionButton: FloatingActionButton(onPressed: _goTo2ndScreen),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _goTo2ndScreen,
+          child: const Icon(Icons.arrow_forward),
+        ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -51,9 +74,17 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(
-              height: 150,
+              height: 80,
             ),
             ElevatedButton(
+                onPressed: () {
+                  _goTo2ndScreen();
+                },
+                child: const Text('proceed')),
+            const SizedBox(
+              height: 200,
+            ),
+            TextButton(
                 onPressed: () {
                   navigateToInfoPage(context);
                 },
@@ -135,36 +166,81 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                         )
                       ],
                     ),
-              const Divider(),
+              const SizedBox(height: 30),
               CheckboxListTile(
-                title: const Text("dark theme"),
+                title: const Text("dark mode"),
                 value: _darkMode,
                 onChanged: (value) {
                   setState(() {
                     _darkMode = value!;
                   });
                   Brightness brightness = value! ? Brightness.dark : Brightness.light;
-                  ref.read(colorThemeProvider.notifier).update((state) => ColorScheme.fromSeed(seedColor: Colors.purple, brightness: brightness));
+                  ref.read(colorThemeProvider.notifier).update((state) => state.copyWith(brightness: brightness));
                 },
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              const Text("Choose a color to theme your experience"),
+              const SizedBox(
+                height: 30,
+              ),
+              InkWell(
+                onTap: _showColorDialogue,
+                child: ColoredBox(
+                  color: currentColor,
+                  child: const SizedBox(
+                    height: 120,
+                    width: 350,
+                  ),
+                ),
               ),
             ],
           ),
         ),
       );
 
+  void _changeColor(Color color) {
+    setState(() => pickerColor = color);
+  }
+
+  _showColorDialogue() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Pick a color!'),
+          content: SingleChildScrollView(
+            child: ColorPicker(
+              pickerColor: pickerColor,
+              onColorChanged: _changeColor,
+            ),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              child: const Text('Got it'),
+              onPressed: () {
+                setState(() => currentColor = pickerColor);
+                ref.read(colorThemeProvider.notifier).update((state) => ColorScheme.fromSeed(seedColor: currentColor, brightness: state.brightness));
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   _signUp() async {
-    if (!_customName) {
-      final prefs = await widget.sharedPreferences;
-      prefs.setBool("darkMode", _darkMode);
-      ref.read(authControllerProvider.notifier).signUpAnon(_entryWordController.text.trim(), _userNameController.text.trim());
+    if (_customName && !validTextValue(_userNameController)) {
+      showSnackBar(context, 'please choose a username');
     } else {
-      if (_userNameController.text.trim() != "") {
-        final prefs = await widget.sharedPreferences;
+      final userName = _customName ? validTextValueReturner(_userNameController) : _madName;
+      await widget.sharedPreferences.then((prefs) {
         prefs.setBool("darkMode", _darkMode);
-        ref.read(authControllerProvider.notifier).signUpAnon(_entryWordController.text.trim(), _userNameController.text.trim());
-      } else {
-        showSnackBar(context, 'please enter a username');
-      }
+        prefs.setInt("color", currentColor.value);
+        ref.read(authControllerProvider.notifier).signUpAnon(_entryWordController.text.trim(), userName, currentColor, context);
+      });
     }
   }
 
