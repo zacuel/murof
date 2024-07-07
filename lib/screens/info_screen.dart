@@ -8,10 +8,11 @@ const List<String> infos = [
   "As I continued to play with this idea, I turned my attention to the elements that might be displayed. plotting a map is simple enough. But what would go on it?",
   "At the heart of things is information. doesn't it have to be? Along those lines I conceived of information interaction systems, visible from afar, with content sourced on location.",
   "I realized that the overall vision could be constructed in pieces. That's what this is, a piece. It does not have a clear association with any location; I'm focused on SE Michigan; the intention is to limit access to locals only. This can be achieved by only allowing initial access in person. I believe some community information processes could go a long way to combat misinformation we deal with in our online lives.",
-  "the idea of a \"locals only\" forum could exist a number of ways. I've done my share of experimentation; I've arrived somewhere simple. There is no algorithm. Users vote on posts: popular posts stay at the top of the list, unpopular posts get deleted. The advantage of this is that underdiscussed issues can, hopefully, have more time in the light. The disadvantage is that there's no feed. The contents will likely be stagnant. The progression of content will depend on the activity of recurrent users.",
+  "the idea of a \"locals only\" forum could exist a number of ways. I've done my share of experimentation; I've arrived somewhere simple. There is no algorithm. Users vote on posts: popular posts stay at the top of the list, unpopular posts get deleted. The advantage of this is that underdiscussed issues can, hopefully, have more time in the light. The disadvantage is that there's no feed. The contents will likely be stagnant. The progression of content will depend on the activity of recurrent users. To enourage priortization, I've limited the number of ideas a user can promote to only 5.",
   "Another consideration is the aspect of identity. How we engage with \"politics\" can affect how we think of ourselves. I believe this app separates ideas from self-image effectively by de-focusing on personal accounts and highlighting the ideas themselves.",
   "This is an app, but perhaps it's best considered as a process. There's something to be said for exploring solutions that engage us on the basic level, in the modern sense, as an app on our phone. Hopefully what I've built can be a useful resource that develops meaningfully over time from a wide pool of ideas and interactions."
 ];
+const List<String> infos2 = [""];
 
 class InfoScreen extends StatefulWidget {
   const InfoScreen({super.key});
@@ -39,6 +40,7 @@ class _InfoScreenState extends State<InfoScreen> {
                 children: [
                   page > 0
                       ? IconButton(
+                          iconSize: 30,
                           onPressed: () {
                             setState(() {
                               page--;
@@ -50,6 +52,7 @@ class _InfoScreenState extends State<InfoScreen> {
                         ),
                   page < infos.length - 1
                       ? IconButton(
+                          iconSize: 30,
                           onPressed: () {
                             setState(() {
                               page++;
@@ -66,7 +69,7 @@ class _InfoScreenState extends State<InfoScreen> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: const Text("ok"),
+                  child: const Text("dismiss"),
                 ),
               if (page == 4) const Text("VOTING BUTTON ---------->")
             ],

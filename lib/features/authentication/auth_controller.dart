@@ -10,17 +10,16 @@ final personProvider = StateProvider<Person?>((ref) => null);
 final authControllerProvider = StateNotifierProvider<AuthController, bool>(
   (ref) {
     final authRepository = ref.read(authRepositoryProvider);
-    return AuthController(authRepository: authRepository, ref: ref);
+    return AuthController(authRepository: authRepository);
   },
 );
 
 class AuthController extends StateNotifier<bool> {
   final AuthRepository _authRepository;
-  final Ref _ref;
 
-  AuthController({required AuthRepository authRepository, required Ref ref})
-      : _authRepository = authRepository,
-        _ref = ref,
+  AuthController({
+    required AuthRepository authRepository,
+  })  : _authRepository = authRepository,
         super(false);
 
   Stream<Person> getPersonData(String uid) => _authRepository.getPersonData(uid);
@@ -28,7 +27,7 @@ class AuthController extends StateNotifier<bool> {
   Future<void> signUpAnon(String passWord, String alias, Color color, BuildContext context) async {
     state = true;
     final result = await _authRepository.signUpAnon(inputCodeWord: passWord, userName: alias, color: color);
-    state = false; 
+    state = false;
     result.fold((l) => showSnackBar(context, l.message), (r) => null);
   }
 }

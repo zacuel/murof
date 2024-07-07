@@ -41,9 +41,21 @@ class HomeScreen extends ConsumerWidget {
               (a, b) => b.upvoteIds.length.compareTo(a.upvoteIds.length),
             );
             return ListView.builder(
-              itemCount: data.length,
+              itemCount: data.length + 1,
               itemBuilder: (context, index) {
-                final article = data[index];
+                if (index == 0) {
+                  return const Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [Text('      title'), Text('score   ')],
+                      ),
+                      Divider(),
+                    ],
+                  );
+                }
+                final article = data[index - 1];
                 final isFav = favList.contains(article.articleId);
                 return ListTile(
                   tileColor: isFav ? person.favoriteColor.withOpacity(.25) : null,

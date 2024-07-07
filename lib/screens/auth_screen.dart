@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,16 +10,6 @@ import 'package:murof/utils/text_validation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../features/authentication/name_engine.dart';
-
-Color get randomColor {
-  Random random = Random();
-  return Color.fromRGBO(
-    random.nextInt(255),
-    random.nextInt(255),
-    random.nextInt(255),
-    1,
-  );
-}
 
 class AuthScreen extends ConsumerStatefulWidget {
   final Future<SharedPreferences> sharedPreferences;
@@ -38,17 +26,15 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   bool _customName = false;
   late String _madName;
   bool _darkMode = false;
-  Color pickerColor = Colors.blue;
-  Color currentColor = Colors.blue;
+  Color pickerColor = Colors.purple;
+  Color currentColor = Colors.purple;
+  late FocusNode _codeFocusNode;
 
   @override
   void initState() {
     super.initState();
     _changeUserName();
-    setState(() {
-      pickerColor = randomColor;
-      currentColor = pickerColor;
-    });
+    _codeFocusNode = FocusNode();
   }
 
   _changeUserName() {
@@ -60,7 +46,15 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 // Opening screen with function to prevent any user from beginning the account process wittout the correct key.
   Widget get _opener => Scaffold(
         appBar: AppBar(
-          title: const Text('enter code'),
+          title: TextButton(
+              onPressed: () {
+                _codeFocusNode.requestFocus();
+              },
+              child: const Text("enter code", style: TextStyle(fontSize: 20, color: Colors.white))),
+          leading: IconButton(
+            onPressed: () => navigateToInfoPage(context),
+            icon: const Text("info"),
+          ),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: _goTo2ndScreen,
@@ -71,6 +65,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           children: [
             TextField(
               controller: _entryWordController,
+              focusNode: _codeFocusNode,
               textAlign: TextAlign.center,
             ),
             const SizedBox(
@@ -86,9 +81,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             ),
             TextButton(
                 onPressed: () {
-                  navigateToInfoPage(context);
+                  _goTo2ndScreen();
                 },
-                child: const Text('explain plz')),
+                child: const Text('proceed')),
           ],
         ),
       );
@@ -108,94 +103,104 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   }
 
   Widget get _closingScreen => Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          leading: IconButton(
+            onPressed: () => navigateToInfoPage(context),
+            icon: const Text("info"),
+          ),
+        ),
         floatingActionButton: FloatingActionButton(
           onPressed: _signUp,
           child: const Icon(Icons.arrow_forward),
         ),
-        body: Center(
-          child: Column(
-            children: [
-              const Text(
-                'choose username + color',
-                style: TextStyle(fontSize: 19),
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: RadioListTile(
-                      title: const Text("custom"),
-                      value: true,
-                      groupValue: _customName,
-                      onChanged: (value) {
-                        setState(() {
-                          _customName = value!;
-                        });
-                      },
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(
+            child: Column(
+              children: [
+                const Text(
+                  'please choose between a custom username or a name generated from a list of nouns and adjectives',
+                  style: TextStyle(fontSize: 19),
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: RadioListTile(
+                        title: const Text("custom"),
+                        value: true,
+                        groupValue: _customName,
+                        onChanged: (value) {
+                          setState(() {
+                            _customName = value!;
+                          });
+                        },
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: RadioListTile(
-                      title: const Text('madlib'),
-                      value: false,
-                      groupValue: _customName,
-                      onChanged: (value) {
-                        setState(() {
-                          _customName = value!;
-                        });
-                      },
+                    Expanded(
+                      child: RadioListTile(
+                        title: const Text('adjective&noun'),
+                        value: false,
+                        groupValue: _customName,
+                        onChanged: (value) {
+                          setState(() {
+                            _customName = value!;
+                          });
+                        },
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              _customName
-                  ? TextField(
-                      controller: _userNameController,
-                      textAlign: TextAlign.center,
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(_madName),
-                        const SizedBox(
-                          width: 50,
-                        ),
-                        ElevatedButton(
-                          onPressed: _changeUserName,
-                          child: const Text('change'),
-                        )
-                      ],
+                  ],
+                ),
+                _customName
+                    ? TextField(
+                        controller: _userNameController,
+                        textAlign: TextAlign.center,
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(_madName),
+                          const SizedBox(
+                            width: 50,
+                          ),
+                          ElevatedButton(
+                            onPressed: _changeUserName,
+                            child: const Text('change'),
+                          )
+                        ],
+                      ),
+                const SizedBox(height: 30),
+                const Text(
+                    "I couldn't decide what colors to use in the design. I decided to let users pick their own color scheme. Users can choose dark vs light mode and choose a color which the framework extrapolates across the interface"),
+                CheckboxListTile(
+                  title: const Text("press here for a dark theme"),
+                  value: _darkMode,
+                  onChanged: (value) {
+                    setState(() {
+                      _darkMode = value!;
+                    });
+                    Brightness brightness = value! ? Brightness.dark : Brightness.light;
+                    ref.read(colorThemeProvider.notifier).update((state) => state.copyWith(brightness: brightness));
+                  },
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                const Text("press the colorful box below to choose your color"),
+                const SizedBox(
+                  height: 30,
+                ),
+                InkWell(
+                  onTap: _showColorDialogue,
+                  child: ColoredBox(
+                    color: currentColor,
+                    child: const SizedBox(
+                      height: 120,
+                      width: 350,
                     ),
-              const SizedBox(height: 30),
-              CheckboxListTile(
-                title: const Text("dark mode"),
-                value: _darkMode,
-                onChanged: (value) {
-                  setState(() {
-                    _darkMode = value!;
-                  });
-                  Brightness brightness = value! ? Brightness.dark : Brightness.light;
-                  ref.read(colorThemeProvider.notifier).update((state) => state.copyWith(brightness: brightness));
-                },
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              const Text("Choose a color to theme your experience"),
-              const SizedBox(
-                height: 30,
-              ),
-              InkWell(
-                onTap: _showColorDialogue,
-                child: ColoredBox(
-                  color: currentColor,
-                  child: const SizedBox(
-                    height: 120,
-                    width: 350,
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       );
@@ -259,5 +264,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     super.dispose();
     _entryWordController.dispose();
     _userNameController.dispose();
+    _codeFocusNode.dispose();
   }
 }

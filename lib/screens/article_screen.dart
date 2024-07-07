@@ -37,12 +37,17 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen> {
       floatingActionButton: _showVoteButton
           ? FloatingActionButton(
               onPressed: () => _vote(favList.length),
-              child: Icon(isFav ? Icons.thumb_down : Icons.thumb_up),
+              child: Icon(isFav ? Icons.remove : Icons.thumb_up),
             )
           : null,
       appBar: AppBar(
         title: Text(widget.article.title),
-        backgroundColor: isFav ? Theme.of(context).appBarTheme.backgroundColor : Theme.of(context).cardColor,
+        actions: [
+          if (isFav) const Icon(Icons.star),
+          const SizedBox(
+            width: 15,
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -64,9 +69,13 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen> {
                     widget.article.url!,
                     style: const TextStyle(fontSize: 20),
                   )),
+            if (widget.article.content != null)
+              const SizedBox(
+                height: 30,
+              ),
             if (widget.article.content != null) Expanded(child: Text(widget.article.content!)),
             const SizedBox(
-              height: 50,
+              height: 45,
             ),
             Text("Posted by - ${widget.article.authorName}")
           ],
