@@ -7,6 +7,7 @@ import 'package:murof/features/authentication/auth_repository.dart';
 import 'package:murof/theme_provider.dart';
 import 'package:murof/utils/firebase_tools/firebase_options.dart';
 import 'package:murof/screens/home_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'features/articles/favorite_articles_provider.dart';
 import 'screens/auth_screen.dart';
@@ -26,10 +27,16 @@ class MyApp extends ConsumerStatefulWidget {
 }
 
 class _MyAppState extends ConsumerState<MyApp> {
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   void getData(User data) async {
+    final prefs = await _prefs;
+
     final person = await ref.read(authControllerProvider.notifier).getPersonData(data.uid).first;
     ref.read(personProvider.notifier).update((state) => person);
     ref.read(favoriteArticlesProvider.notifier).createListState(person.favoriteArticleIds);
+    final bool spDarkMode = prefs.getBool('darkMode') ?? false;
+    Brightness brightness = spDarkMode ? Brightness.dark : Brightness.light;
+    ref.read(colorThemeProvider.notifier).update((state) => ColorScheme.fromSeed(seedColor: Colors.purple, brightness: brightness));
   }
 
   @override
@@ -37,7 +44,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: "Oxygen", colorScheme: ref.watch(colorThemeProvider)),
-      title: "forum",
+      title: "think tank",
       home: ref.watch(authStateChangeProvider).when(
           data: (data) {
             if (data != null) {
@@ -45,7 +52,8 @@ class _MyAppState extends ConsumerState<MyApp> {
 
               return const HomeScreen();
             }
-            return const AuthScreen();
+
+            return AuthScreen(_prefs);
           },
           error: (error, _) => ErrorText(error.toString()),
           loading: () => const Loader()),

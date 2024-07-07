@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:murof/navigation.dart';
 import 'package:murof/features/authentication/auth_controller.dart';
 import 'package:murof/features/authentication/auth_repository.dart';
 import 'package:murof/theme_provider.dart';
 import 'package:murof/utils/snackybar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../features/authentication/name_engine.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
-  const AuthScreen({super.key});
+  final Future<SharedPreferences> sharedPreferences;
+  const AuthScreen(this.sharedPreferences, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _AuthScreenState();
@@ -20,6 +23,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   bool _codeCorrect = false;
   bool _customName = false;
   late String _madName;
+  bool _darkMode = false;
 
   @override
   void initState() {
@@ -49,6 +53,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             const SizedBox(
               height: 150,
             ),
+            ElevatedButton(
+                onPressed: () {
+                  navigateToInfoPage(context);
+                },
+                child: const Text('explain plz')),
           ],
         ),
       );
@@ -127,7 +136,17 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                       ],
                     ),
               const Divider(),
-              
+              CheckboxListTile(
+                title: const Text("dark theme"),
+                value: _darkMode,
+                onChanged: (value) {
+                  setState(() {
+                    _darkMode = value!;
+                  });
+                  Brightness brightness = value! ? Brightness.dark : Brightness.light;
+                  ref.read(colorThemeProvider.notifier).update((state) => ColorScheme.fromSeed(seedColor: Colors.purple, brightness: brightness));
+                },
+              ),
             ],
           ),
         ),
@@ -135,9 +154,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
   _signUp() async {
     if (!_customName) {
+      final prefs = await widget.sharedPreferences;
+      prefs.setBool("darkMode", _darkMode);
       ref.read(authControllerProvider.notifier).signUpAnon(_entryWordController.text.trim(), _userNameController.text.trim());
     } else {
       if (_userNameController.text.trim() != "") {
+        final prefs = await widget.sharedPreferences;
+        prefs.setBool("darkMode", _darkMode);
         ref.read(authControllerProvider.notifier).signUpAnon(_entryWordController.text.trim(), _userNameController.text.trim());
       } else {
         showSnackBar(context, 'please enter a username');

@@ -8,11 +8,19 @@ import 'package:murof/utils/error_loader.dart';
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
+  _showInfo(BuildContext context) {
+    navigateToInfoPage(context);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final favList = ref.watch(favoriteArticlesProvider);
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Text("info"),
+          onPressed: () => _showInfo(context),
+        ),
         actions: [ElevatedButton(onPressed: () => navigateToPostLink(context), child: const Text("post something"))],
       ),
       body: ref.watch(articleFeedProvider).when(
@@ -26,7 +34,7 @@ class HomeScreen extends ConsumerWidget {
                 final article = data[index];
                 final isFav = favList.contains(article.articleId);
                 return ListTile(
-                  tileColor: isFav ? Colors.amber : null,
+                  tileColor: isFav ? Colors.amber.withOpacity(.5) : null,
                   onTap: () {
                     navigateToArticle(context, article);
                   },

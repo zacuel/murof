@@ -37,23 +37,29 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen> {
         title: Text(widget.article.title),
         backgroundColor: isFav ? Colors.green : Colors.red,
       ),
-      body: ListView(
-        children: [
-          //TDO format
-          if (widget.article.url != null)
-            TextButton(
-                onPressed: () async {
-                  final Uri linkUrl = Uri.parse(widget.article.url!);
-                  if (!await launchUrl(linkUrl)) {
-                    throw Exception('Could not launch ${widget.article.url!}');
-                  }
-                },
-                child: Text(
-                  widget.article.url!,
-                  style: const TextStyle(fontSize: 20),
-                )),
-          if (widget.article.content != null) Expanded(child: Text(widget.article.content!)),
-        ],
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: ListView(
+          children: [
+            const SizedBox(
+              height: 20,
+            ),
+            //TDO format
+            if (widget.article.url != null)
+              TextButton(
+                  onPressed: () async {
+                    final Uri linkUrl = Uri.parse(widget.article.url!);
+                    if (!await launchUrl(linkUrl)) {
+                      throw Exception('Could not launch ${widget.article.url!}');
+                    }
+                  },
+                  child: Text(
+                    widget.article.url!,
+                    style: const TextStyle(fontSize: 20),
+                  )),
+            if (widget.article.content != null) Expanded(child: Text(widget.article.content!)),
+          ],
+        ),
       ),
     );
   }
