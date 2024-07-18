@@ -17,8 +17,11 @@ class ArticleScreen extends ConsumerStatefulWidget {
 class _ArticleScreenState extends ConsumerState<ArticleScreen> {
   bool _showVoteButton = true;
 
-  _vote(int listLength) {
-    if (listLength < Constance.maxUpvotes) {
+  _vote(int listLength, bool isUpvote) {
+    if(!isUpvote){
+      ref.read(favoriteArticlesProvider.notifier).toggleArticleFavoriteStatus(widget.article.articleId);
+    }
+    else if (listLength < Constance.maxUpvotes) {
       ref.read(favoriteArticlesProvider.notifier).toggleArticleFavoriteStatus(widget.article.articleId);
     } else {
       showSnackBar(context, 'Max Upvotes Reached');
@@ -36,7 +39,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen> {
     return Scaffold(
       floatingActionButton: _showVoteButton
           ? FloatingActionButton(
-              onPressed: () => _vote(favList.length),
+              onPressed: () => _vote(favList.length, !isFav),
               child: Icon(isFav ? Icons.remove : Icons.thumb_up),
             )
           : null,
@@ -54,9 +57,8 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen> {
         child: ListView(
           children: [
             const SizedBox(
-              height: 20,
+              height: 12,
             ),
-            //TDO format
             if (widget.article.url != null)
               TextButton(
                   onPressed: () async {
@@ -69,11 +71,10 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen> {
                     widget.article.url!,
                     style: const TextStyle(fontSize: 20),
                   )),
-            if (widget.article.content != null)
-              const SizedBox(
-                height: 30,
-              ),
-            if (widget.article.content != null) Expanded(child: Text(widget.article.content!)),
+            const SizedBox(
+              height: 10,
+            ),
+            if (widget.article.content != null) Text(widget.article.content!),
             const SizedBox(
               height: 45,
             ),
